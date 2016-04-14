@@ -366,11 +366,11 @@ class Font extends Object
                 case '<':
                     // Decode hexadecimal.
                     $text = self::decodeHexadecimal('<' . $command[Object::COMMAND] . '>');
-                    
+
                     if (mb_check_encoding($text, "UTF-8")) {
                         $unicode = true;
                     }
-                    
+
                     break;
 
                 default:
@@ -479,6 +479,12 @@ class Font extends Object
 
                     $text = $result;
                 } else {
+                    if ($encoding->get('BaseEncoding')->equals('WinAnsiEncoding')) {
+                        $text = @iconv('Windows-1252', 'UTF-8//TRANSLIT//IGNORE', $text);
+
+                        return $text;
+                    }
+
                     $result = '';
                     $length = strlen($text);
 
