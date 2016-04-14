@@ -411,7 +411,6 @@ class Font extends PDFObject
     protected function decodeContent($text, &$unicode)
     {
         if ($this->has('ToUnicode')) {
-
             $bytes = $this->tableSizes['from'];
 
             if ($bytes) {
@@ -424,7 +423,6 @@ class Font extends PDFObject
                     if (($decoded = $this->translateChar($char, false)) !== false) {
                         $char = $decoded;
                     } elseif ($this->has('DescendantFonts')) {
-
                         if ($this->get('DescendantFonts') instanceof PDFObject) {
                             $fonts   = $this->get('DescendantFonts')->getHeader()->getElements();
                         } else {
@@ -480,6 +478,12 @@ class Font extends PDFObject
 
                     $text = $result;
                 } else {
+                    if ($encoding->get('BaseEncoding')->equals('WinAnsiEncoding')) {
+                        $text = @iconv('Windows-1252', 'UTF-8//TRANSLIT//IGNORE', $text);
+
+                        return $text;
+                    }
+
                     $result = '';
                     $length = strlen($text);
 
@@ -502,7 +506,6 @@ class Font extends PDFObject
 
         // Convert to unicode if not already done.
         if (!$unicode) {
-
             if ($this->get('Encoding') instanceof Element &&
                 $this->get('Encoding')->equals('MacRomanEncoding')
             ) {
